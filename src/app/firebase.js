@@ -2,7 +2,14 @@
 import { initializeApp } from "firebase/app";
 import { getAnalytics, isSupported } from "firebase/analytics";
 import "firebase/firestore";
-import { Firestore, getFirestore } from "firebase/firestore";
+import { getFirestore } from "firebase/firestore";
+import {
+  getStorage,
+  ref,
+  uploadBytes,
+  uploadBytesResumable,
+} from "firebase/storage";
+import { v4 } from "uuid";
 // TODO: Add SDKs for Firebase products that you want to use
 // https://firebase.google.com/docs/web/setup#available-libraries
 
@@ -21,6 +28,19 @@ const firebaseConfig = {
 // Initialize Firebase
 export const app = initializeApp(firebaseConfig);
 export const db = getFirestore(app);
+export const storage = getStorage();
+
+const metadata = {
+  contentType: "image/jpeg",
+};
+
+export const uploadFile = (file) => {
+  const storageRef = ref(storage, v4());
+  uploadBytesResumable(storageRef, file, metadata).then((snapshot) => {
+    console.log(snapshot);
+  });
+};
+// se esta subiendo como C:/fakepath/miduconf.jpg
 
 let analytics;
 isSupported().then((isSupported) => {

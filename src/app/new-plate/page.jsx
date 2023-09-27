@@ -2,11 +2,13 @@
 import React, { useContext } from "react";
 import { useFormik } from "formik";
 import * as Yup from "yup";
-import { analytics, app, db } from "../firebase";
+import { analytics, app, db, storage, uploadFile } from "../firebase";
 import { addDoc, collection } from "firebase/firestore";
+import { useRouter } from "next/navigation";
 
 function NewPlate() {
   // validacion y leer los datos del formulario
+  const router = useRouter();
   const formik = useFormik({
     initialValues: {
       nombre: "",
@@ -29,10 +31,16 @@ function NewPlate() {
     }),
     onSubmit: async (datos) => {
       try {
+        datos.exits = true;
         await addDoc(collection(db, "plates"), {
           datos,
         });
-      } catch (error) {}
+        uploadFile(formik.values.imagen);
+        // Redireccionar
+        router.push("/menu");
+      } catch (error) {
+        console.log(error);
+      }
     },
   });
 
